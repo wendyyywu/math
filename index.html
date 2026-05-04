@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01大法 - 奇偶判断小课堂</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9AAB;
+            --secondary: #A8D8EA;
+            --accent: #98D8AA;
+            --background: #FFF8F0;
+            --text: #5D5A66;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(255, 154, 171, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--background);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(255, 154, 171, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(168, 216, 234, 0.15) 0%, transparent 30%),
+                radial-gradient(circle at 50% 50%, rgba(152, 216, 170, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-shadow: 2px 2px 0 rgba(255, 154, 171, 0.3);
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), #7BC88C);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 12px;
+            box-shadow: 0 4px 15px rgba(152, 216, 170, 0.4);
+        }
+
+        .home-link {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.85rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .home-link:hover {
+            transform: scale(1.05);
+        }
+
+        .input-section {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px var(--shadow);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .input-section h2 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        .input-group input {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #E8E4EF;
+            border-radius: 16px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            text-align: center;
+            color: var(--text);
+            background: #FAF9FC;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: white;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 154, 171, 0.3);
+        }
+
+        .input-group input.error {
+            border-color: #FF6B6B;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .plus-sign {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            color: var(--secondary);
+            align-self: center;
+            margin-top: 20px;
+        }
+
+        .result-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, var(--primary), #FF7B8F);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 16px;
+            min-width: 90px;
+        }
+
+        .result-display #resultValue {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .result-display .result-type {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .visualization-section {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px var(--shadow);
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .visualization-section h2 {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .socks-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .sock-card {
+            background: linear-gradient(145deg, #FAFBFC, #F0F4F8);
+            border-radius: 16px;
+            padding: 15px 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            min-width: 120px;
+        }
+
+        .sock-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(152, 216, 170, 0.25);
+        }
+
+        .sock-number {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sock-number .num {
+            color: var(--text);
+        }
+
+        .sock-number .type-badge {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .sock-number .type-badge.odd {
+            background: rgba(255, 154, 171, 0.2);
+            color: #E85A71;
+        }
+
+        .sock-number .type-badge.even {
+            background: rgba(168, 216, 234, 0.3);
+            color: #5BA4C7;
+        }
+
+        .socks-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            min-height: 60px;
+            align-items: flex-start;
+        }
+
+        .sock-pair {
+            display: flex;
+            gap: 4px;
+            padding: 6px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .sock-single {
+            padding: 6px 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-left: 4px;
+        }
+
+        .sock {
+            width: 22px;
+            height: 36px;
+            position: relative;
+        }
+
+        .sock svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .result-section {
+            background: linear-gradient(135deg, var(--primary), #FF7B8F);
+            border-radius: 24px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(255, 154, 171, 0.4);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .result-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .result-formula {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 16px;
+            display: inline-block;
+        }
+
+        .result-explanation {
+            background: rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-explanation p {
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .result-explanation .highlight {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .final-result {
+            background: white;
+            color: var(--text);
+            padding: 15px 30px;
+            border-radius: 16px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .final-result .emoji {
+            font-size: 2rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .sock:hover {
+            animation: wiggle 0.3s ease-in-out infinite;
+        }
+
+        .sock-pair-info {
+            font-size: 0.75rem;
+            color: var(--text);
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        .tooltip {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #FF6B6B;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .tooltip.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text);
+            opacity: 0.6;
+            font-size: 0.85rem;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        /* ========== 响应式 - iOS/Android 优化 ========== */
+        
+        @supports (padding: env(safe-area-inset-bottom)) {
+            body {
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 20px 15px; }
+            .header { margin-bottom: 25px; }
+            .header h1 { font-size: 2rem; }
+            .header .subtitle { font-size: 1rem; }
+            .input-section, .visualization-section, .result-section {
+                padding: 22px 18px;
+                margin-bottom: 20px;
+                border-radius: 20px;
+            }
+            .socks-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .sock-card { min-width: 100px; padding: 12px 10px; }
+            .sock-number { font-size: 1.4rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 15px 12px; }
+            .header { margin-bottom: 20px; }
+            .header h1 { font-size: 1.6rem; }
+            .header .subtitle { font-size: 0.9rem; }
+            .badge { padding: 5px 12px; font-size: 0.8rem; }
+            .home-link { top: 10px; left: 10px; padding: 6px 12px; font-size: 0.8rem; }
+            .input-section { padding: 18px 12px; margin-bottom: 18px; border-radius: 18px; }
+            .input-section h2 { font-size: 1rem; margin-bottom: 15px; }
+            .input-row { gap: 6px; }
+            .input-group { gap: 5px; }
+            .input-group label { font-size: 0.75rem; }
+            .input-group input { width: 45px; height: 45px; font-size: 1.2rem; border-radius: 12px; border-width: 2px; }
+            .plus-sign { font-size: 1.3rem; margin-top: 12px; }
+            .result-display { padding: 8px 12px; border-radius: 12px; min-width: 75px; }
+            .result-display #resultValue { font-size: 1.3rem; }
+            .result-display .result-type { font-size: 0.75rem; }
+            .visualization-section { padding: 15px 10px; margin-bottom: 18px; border-radius: 18px; }
+            .visualization-section h2 { font-size: 1rem; margin-bottom: 15px; }
+            .socks-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 8px 0; }
+            .sock-card { min-width: 70px; padding: 10px 6px; border-radius: 12px; }
+            .sock-number { font-size: 1.1rem; margin-bottom: 8px; gap: 5px; }
+            .sock-number .num { font-size: 1.1rem; }
+            .sock-number .type-badge { font-size: 0.6rem; padding: 2px 6px; }
+            .socks-container { gap: 4px; min-height: 45px; }
+            .sock-pair { padding: 4px; gap: 3px; border-radius: 8px; }
+            .sock-single { padding: 4px 6px; border-radius: 8px; margin-left: 3px; }
+            .sock { width: 14px; height: 22px; }
+            .result-section { padding: 20px 15px; border-radius: 18px; }
+            .result-section h2 { font-size: 1rem; margin-bottom: 15px; }
+            .result-formula { font-size: 1.3rem; padding: 12px 18px; border-radius: 12px; }
+            .result-explanation { padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+            .result-explanation p { font-size: 0.9rem; line-height: 1.6; }
+            .result-explanation .highlight { font-size: 1.5rem; }
+            .final-result { padding: 12px 20px; border-radius: 12px; font-size: 1.2rem; gap: 8px; }
+            .final-result .emoji { font-size: 1.5rem; }
+            .footer { padding: 15px; font-size: 0.8rem; }
+            .tooltip { padding: 10px 16px; font-size: 0.85rem; border-radius: 10px; }
+        }
+        
+        @media (max-width: 360px) {
+            .header h1 { font-size: 1.4rem; }
+            .input-group input { width: 40px; height: 40px; font-size: 1.1rem; }
+            .plus-sign { font-size: 1.1rem; }
+            .sock-card { min-width: 60px; padding: 8px 4px; }
+            .sock { width: 12px; height: 18px; }
+        }
+        
+        @media (hover: none) and (pointer: coarse) {
+            .sock-card:active { transform: scale(0.98); }
+            .input-group input:active { border-color: var(--primary); transform: scale(1.02); }
+            .sock:hover { animation: none; }
+        }
+        
+        @media screen and (max-width: 480px) {
+            html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <a href="home.html" class="home-link">🏠 返回首页</a>
+    <div class="tooltip" id="tooltip">请输入1-20之间的整数哦！</div>
+
+    <div class="container">
+        <header class="header">
+            <h1>🧦 01大法 🧦</h1>
+            <p class="subtitle">用袜子学习奇偶判断的秘密武器</p>
+            <span class="badge">✨ 小学数学趣味练习</span>
+        </header>
+
+        <section class="input-section">
+            <h2>📝 请输入5个数字 (1-20)</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>加数 1</label>
+                    <input type="number" id="num1" value="5" min="1" max="20">
+                </div>
+                <span class="plus-sign">+</span>
+                <div class="input-group">
+                    <label>加数 2</label>
+                    <input type="number" id="num2" value="6" min="1" max="20">
+                </div>
+                <span class="plus-sign">+</span>
+                <div class="input-group">
+                    <label>加数 3</label>
+                    <input type="number" id="num3" value="7" min="1" max="20">
+                </div>
+                <span class="plus-sign">+</span>
+                <div class="input-group">
+                    <label>加数 4</label>
+                    <input type="number" id="num4" value="8" min="1" max="20">
+                </div>
+                <span class="plus-sign">+</span>
+                <div class="input-group">
+                    <label>加数 5</label>
+                    <input type="number" id="num5" value="9" min="1" max="20">
+                </div>
+                <span class="plus-sign">=</span>
+                <div class="result-display">
+                    <span id="resultValue">35</span>
+                    <span class="result-type" id="resultType">奇数</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="visualization-section">
+            <h2>🧦 袜子可视化 🧦</h2>
+            <div class="socks-grid" id="socksGrid">
+            </div>
+        </section>
+
+        <footer class="footer">
+            💡 小提示：数一数袜子的总数，偶数个袜子是偶数，奇数个袜子是奇数哦！
+        </footer>
+    </div>
+
+    <script>
+        const sockColors = [
+            { pair: '#FFB6C1', sole: '#FF69B4', name: '粉色' },
+            { pair: '#87CEEB', sole: '#4169E1', name: '蓝色' },
+            { pair: '#98FB98', sole: '#32CD32', name: '绿色' },
+            { pair: '#DDA0DD', sole: '#9370DB', name: '紫色' },
+            { pair: '#FFD700', sole: '#FF8C00', name: '橙色' }
+        ];
+
+        function createSockSVG(color, isSingle = false) {
+            return `
+                <svg viewBox="0 0 28 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 0C8 0 6 0 6 2V18C4 18 2 20 2 24C2 30 6 34 12 38C16 40.5 20 42 24 42C26 42 28 40 28 38C28 35 26 32 24 30C22 28 20 27 20 24C20 22 22 20 22 18V2C22 0 20 0 20 0H8Z"
+                          fill="${color}"
+                          stroke="${color === '#FFB6C1' || color === '#87CEEB' || color === '#98FB98' || color === '#FFD700' ? '#E0E0E0' : '#FFFFFF'}"
+                          stroke-width="1"/>
+                    <ellipse cx="14" cy="8" rx="4" ry="2" fill="${color === '#FFB6C1' || color === '#87CEEB' || color === '#98FB98' || color === '#FFD700' ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)'}" />
+                    <path d="M8 6H20" stroke="${color === '#FFB6C1' || color === '#87CEEB' || color === '#98FB98' || color === '#FFD700' ? '#D0D0D0' : 'rgba(255,255,255,0.5)'}" stroke-width="1.5"/>
+                </svg>
+            `;
+        }
+
+        function showTooltip(message) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = message;
+            tooltip.classList.add('show');
+            setTimeout(() => tooltip.classList.remove('show'), 2000);
+        }
+
+        function validateInput(input) {
+            let value = parseInt(input.value);
+            if (isNaN(value) || value < 1) {
+                value = 1;
+                showTooltip('数值不能小于1，已自动修正为1');
+            } else if (value > 20) {
+                value = 20;
+                showTooltip('数值不能大于20，已自动修正为20');
+            }
+            input.value = value;
+            return value;
+        }
+
+        function renderSocks() {
+            const grid = document.getElementById('socksGrid');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= 5; i++) {
+                const input = document.getElementById(`num${i}`);
+                const num = validateInput(input);
+                const isOdd = num % 2 === 1;
+                const colorSet = sockColors[i - 1];
+
+                const pairs = Math.floor(num / 2);
+                const hasSingle = num % 2 === 1;
+
+                let socksHTML = '';
+
+                for (let p = 0; p < pairs; p++) {
+                    socksHTML += `
+                        <div class="sock-pair">
+                            <div class="sock">${createSockSVG(colorSet.pair)}</div>
+                            <div class="sock">${createSockSVG(colorSet.pair)}</div>
+                        </div>
+                    `;
+                }
+
+                if (hasSingle) {
+                    socksHTML += `
+                        <div class="sock-single">
+                            <div class="sock">${createSockSVG(colorSet.sole, true)}</div>
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'sock-card';
+                card.innerHTML = `
+                    <div class="sock-number">
+                        <span class="num">${num}</span>
+                        <span class="type-badge ${isOdd ? 'odd' : 'even'}">${isOdd ? '奇数' : '偶数'}</span>
+                    </div>
+                    <div class="socks-container">
+                        ${socksHTML}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            }
+
+            updateResult();
+        }
+
+        function updateResult() {
+            const nums = [];
+            for (let i = 1; i <= 5; i++) {
+                nums.push(parseInt(document.getElementById(`num${i}`).value) || 0);
+            }
+
+            const sum = nums.reduce((a, b) => a + b, 0);
+            document.getElementById('resultValue').textContent = sum;
+
+            const isOdd = sum % 2 === 1;
+            const resultType = document.getElementById('resultType');
+            resultType.textContent = isOdd ? '奇数' : '偶数';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 5; i++) {
+                const input = document.getElementById(`num${i}`);
+
+                input.addEventListener('input', () => {
+                    renderSocks();
+                });
+
+                input.addEventListener('blur', () => {
+                    validateInput(input);
+                    renderSocks();
+                });
+
+                input.addEventListener('change', () => {
+                    validateInput(input);
+                    renderSocks();
+                });
+            }
+
+            renderSocks();
+        });
+    </script>
+</body>
+</html>
